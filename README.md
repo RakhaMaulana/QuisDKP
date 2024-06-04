@@ -12,3 +12,11 @@ How to attack :
 ```
 > python3 attack.py
 ```
+
+Perbaikan :
+
+```
+> 1.	Pemanggilan Database yang Lebih Proper
+> 2.	Penggunaan Transaksi dan Locking Database
+
+```
