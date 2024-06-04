@@ -110,9 +110,17 @@ class API:
                 if not product_obj:
                     return False, "No such product"
 
-                user_obj = User.select_for_update().get()  # Locking user row for update
+                # Mendapatkan id pengguna dari token
+                token = request.cookies.get("token")
+                user_objs = User.select().where(User.token == token)
+                if len(user_objs) == 0:
+                    return False, "User not found"
+                user_id = user_objs[0].id
+
+                # Mendapatkan saldo pengguna dan mengunci baris pengguna
+                user_obj = User.select().where(User.id == user_id).for_update().get()
                 if product_obj.price > user_obj.balance:
-                    return False, "No enough balance"
+                    return False, "Not enough balance"
 
                 # Check user balance before purchasing
                 initial_balance = user_obj.balance
@@ -138,6 +146,7 @@ class API:
             return False, "Transaction failed, database rolled back"
 
         return True, ""
+
 
     @staticmethod
     @db.connection_context()
@@ -215,4 +224,3 @@ def sell(purchase_id):
         return make_response(redirect("/"))
     else:
         return err_message
-    
